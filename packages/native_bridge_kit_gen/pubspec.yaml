@@ -1,0 +1,17 @@
+name: native_bridge_kit_gen
+description: >-
+  Convenience facade that aggregates all native_bridge_kit code generators.
+  Adding this single dev_dependency pulls in Dart (.g.dart), Android/Kotlin
+  (.g.kt), and iOS/Swift (.g.swift) generators in one step.
+version: 0.1.0
+repository: https://github.com/handertool/native_bridge_kit
+issue_tracker: mailto:handertool@gmail.com
+publish_to: 'none'
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  native_bridge_kit_dart_gen: ^0.1.0
+  native_bridge_kit_android_gen: ^0.1.0
+  native_bridge_kit_ios_gen: ^0.1.0

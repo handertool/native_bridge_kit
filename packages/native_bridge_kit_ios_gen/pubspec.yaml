@@ -1,0 +1,19 @@
+name: native_bridge_kit_ios_gen
+description: Swift code generator for native_bridge_kit. Generates iOS/Swift handler stubs from Dart bridge contracts.
+version: 0.1.0
+repository: https://github.com/handertool/native_bridge_kit
+issue_tracker: mailto:handertool@gmail.com
+publish_to: 'none'
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  analyzer: ">=6.0.0 <8.0.0"
+  build: ^2.4.0
+  source_gen: ^1.4.0
+  dart_style: ^2.3.0
+  native_bridge_kit_annotation: ^0.1.0
+
+dev_dependencies:
+  test: ^1.24.0

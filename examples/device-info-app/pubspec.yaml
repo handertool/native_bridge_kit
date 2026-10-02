@@ -1,0 +1,40 @@
+name: device_info_app
+description: Complete example of native_bridge_kit with Android & iOS handlers and unit tests.
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  native_bridge_kit:
+    path: ../../packages/native_bridge_kit
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+  build_runner: ^2.4.0
+  native_bridge_kit_gen:
+    path: ../../packages/native_bridge_kit_gen
+
+dependency_overrides:
+  native_bridge_kit_annotation:
+    path: ../../packages/native_bridge_kit_annotation
+  native_bridge_kit:
+    path: ../../packages/native_bridge_kit
+  native_bridge_kit_dart_gen:
+    path: ../../packages/native_bridge_kit_dart_gen
+  native_bridge_kit_android_gen:
+    path: ../../packages/native_bridge_kit_android_gen
+  native_bridge_kit_ios_gen:
+    path: ../../packages/native_bridge_kit_ios_gen
+  native_bridge_kit_gen:
+    path: ../../packages/native_bridge_kit_gen
+
+flutter:
+  uses-material-design: true

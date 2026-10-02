@@ -1,0 +1,9 @@
+dependency_overrides:
+  native_bridge_kit_annotation:
+    path: ../native_bridge_kit_annotation
+  native_bridge_kit_dart_gen:
+    path: ../native_bridge_kit_dart_gen
+  native_bridge_kit_android_gen:
+    path: ../native_bridge_kit_android_gen
+  native_bridge_kit_ios_gen:
+    path: ../native_bridge_kit_ios_gen

@@ -1,0 +1,20 @@
+name: native_bridge_kit_cli
+description: CLI tool for native_bridge_kit. Includes drift-check command for validating Dart contracts against native stubs. Install globally via `dart pub global activate native_bridge_kit_cli`.
+version: 0.1.0
+repository: https://github.com/handertool/native_bridge_kit
+issue_tracker: mailto:handertool@gmail.com
+publish_to: 'none'
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  analyzer: '>=6.0.0 <8.0.0'
+  args: ^2.4.0
+  native_bridge_kit_annotation: ^0.1.0
+
+dev_dependencies:
+  test: ^1.24.0
+
+executables:
+  drift_check: drift_check

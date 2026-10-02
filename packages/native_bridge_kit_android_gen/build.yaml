@@ -1,0 +1,7 @@
+builders:
+  kotlin_builder:
+    import: "package:native_bridge_kit_android_gen/native_bridge_kit_android_gen.dart"
+    builder_factories: ["kotlinBridgeBuilder"]
+    build_extensions: { ".dart": [".g.kt"] }
+    auto_apply: root_package
+    build_to: source

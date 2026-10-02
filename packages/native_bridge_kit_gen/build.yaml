@@ -1,0 +1,8 @@
+builders:
+  native_bridge_kit_dart:
+    import: "package:native_bridge_kit_dart_gen/native_bridge_kit_dart_gen.dart"
+    builder_factories: ["nativeBridgeBuilder"]
+    build_extensions: {".dart": [".native_bridge_kit.g.part"]}
+    auto_apply: dependents
+    build_to: cache
+    applies_builders: ["source_gen|combining_builder"]

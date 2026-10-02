@@ -1,0 +1,7 @@
+builders:
+  swift_builder:
+    import: "package:native_bridge_kit_ios_gen/native_bridge_kit_ios_gen.dart"
+    builder_factories: ["swiftBridgeBuilder"]
+    build_extensions: { ".dart": [".g.swift"] }
+    auto_apply: root_package
+    build_to: source
