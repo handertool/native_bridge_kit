@@ -2,12 +2,15 @@
 
 `build_runner` generator for Dart implementations of `@NativeBridge` contracts.
 
+It is part of the Android and iOS bridge workflow. It does not generate Web or
+Linux host implementations.
+
 ## Installation
 
 ```yaml
 dev_dependencies:
   build_runner: ^2.4.0
-  native_bridge_kit_dart_gen: ^0.1.2
+  native_bridge_kit_dart_gen: ^0.1.3
 ```
 
 Your application also needs `native_bridge_kit` as a runtime dependency.

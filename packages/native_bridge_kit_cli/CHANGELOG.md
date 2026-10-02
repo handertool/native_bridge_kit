@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.3
+
+- Clarified that drift checks target Android and iOS handlers.
+
 ## 0.1.2
 
 - First pub.dev release of the native bridge drift-check CLI.

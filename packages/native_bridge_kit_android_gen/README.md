@@ -2,6 +2,8 @@
 
 Android Kotlin code generator for native_bridge_kit. Automatically generates Kotlin handler stubs from Dart bridge contracts.
 
+This package targets Android only. Web and Linux handler code is not generated.
+
 ## Overview
 
 `native_bridge_kit_android_gen` is a code generator that creates Kotlin handler scaffolds from your Dart bridge contracts. It integrates with `build_runner` and generates MethodChannel/EventChannel wiring plus marked implementation points. The generated file is a scaffold: register the implemented handler from your Android host code and fill in the platform-specific behavior.
@@ -13,8 +15,8 @@ Add to your project's `pubspec.yaml` **dev_dependencies**:
 ```yaml
 dev_dependencies:
   build_runner: ^2.4.0
-  native_bridge_kit_gen: ^0.1.2
-  native_bridge_kit_android_gen: ^0.1.2
+  native_bridge_kit_gen: ^0.1.3
+  native_bridge_kit_android_gen: ^0.1.3
 ```
 
 ## Quick Start

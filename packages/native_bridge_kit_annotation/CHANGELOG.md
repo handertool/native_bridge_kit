@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.3
+
+- Clarified the Android and iOS target scope.
+
 ## 0.1.2
 
 - Coordinated release with the runtime and generator packages.

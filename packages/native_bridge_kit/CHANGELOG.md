@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.3
+
+- Clarified that native transport support targets Android and iOS.
+
 ## 0.1.2
 
 - Coordinated release with the published generator packages.

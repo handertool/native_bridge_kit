@@ -2,11 +2,17 @@
 
 Dart-first runtime support for Flutter native bridge contracts.
 
+## Platform support
+
+This release supports Android and iOS native integrations. The runtime transport
+does not provide Web or Linux host implementations, and the generators produce
+Kotlin and Swift scaffolds only.
+
 ## Installation
 
 ```yaml
 dependencies:
-  native_bridge_kit: ^0.1.2
+  native_bridge_kit: ^0.1.3
 ```
 
 ## Define a contract
@@ -27,7 +33,7 @@ abstract class DeviceInfoBridge {
 }
 ```
 
-The generator packages are kept in the repository and will be published in a later release. Generate the implementation with the local generators or after they are published:
+Generate the implementation with the published generator packages:
 
 ```bash
 dart run build_runner build
