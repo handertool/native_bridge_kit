@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.3
+
+- Clarified that generated native scaffolds target Android and iOS.
+
 ## 0.1.2
 
 - First pub.dev release of the combined generator facade.

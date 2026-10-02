@@ -1,6 +1,6 @@
 name: native_bridge_kit_android_gen
 description: Kotlin code generator for native_bridge_kit. Generates Android/Kotlin handler stubs from Dart bridge contracts.
-version: 0.1.2
+version: 0.1.3
 repository: https://github.com/handertool/native_bridge_kit
 issue_tracker: https://github.com/handertool/native_bridge_kit/issues
 

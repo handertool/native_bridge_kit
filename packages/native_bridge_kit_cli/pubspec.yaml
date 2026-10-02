@@ -1,6 +1,6 @@
 name: native_bridge_kit_cli
-description: CLI tool for native_bridge_kit. Includes drift-check command for validating Dart contracts against native stubs. Install globally via `dart pub global activate native_bridge_kit_cli`.
-version: 0.1.2
+description: CLI tool for Android and iOS native_bridge_kit projects. Includes drift-check command for validating Dart contracts against native stubs. Install globally via `dart pub global activate native_bridge_kit_cli`.
+version: 0.1.3
 repository: https://github.com/handertool/native_bridge_kit
 issue_tracker: https://github.com/handertool/native_bridge_kit/issues
 

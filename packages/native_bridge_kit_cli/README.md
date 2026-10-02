@@ -6,13 +6,16 @@ Command-line tools for native_bridge_kit, including the `drift-check` command fo
 
 `native_bridge_kit_cli` provides command-line utilities for working with native_bridge_kit projects. The primary tool is `drift-check`, which validates that your Dart bridge contracts match your Kotlin and Swift handlers.
 
+The current supported native targets are Android and iOS. Web and Linux native
+handlers are outside the scope of the drift checker.
+
 ## Installation
 
 Add to your project's `pubspec.yaml` **dev_dependencies**:
 
 ```yaml
 dev_dependencies:
-  native_bridge_kit_cli: ^0.1.2
+  native_bridge_kit_cli: ^0.1.3
 ```
 
 ## drift-check Command

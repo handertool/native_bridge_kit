@@ -45,6 +45,13 @@ This is useful for teams that want typed, reviewable platform boundaries without
 - Keep generated output reviewable because native output is ordinary Kotlin and Swift source.
 - Adopt the system gradually alongside existing manual channels.
 
+## Supported platforms
+
+Native Bridge Kit currently supports native bridge integrations for Android and
+iOS. The generators produce Kotlin and Swift scaffolds for those platforms.
+Web, Linux, Windows, and macOS host implementations are not generated or
+supported by this release.
+
 ## What it cannot do
 
 Native Bridge Kit intentionally does not attempt to be a complete native plugin framework. It does not:
@@ -69,7 +76,7 @@ The published packages include the runtime, annotations, generators, and CLI:
 
 ```yaml
 dependencies:
-  native_bridge_kit: ^0.1.0
+  native_bridge_kit: ^0.1.3
 ```
 
 When using code generation, add the generator facade as a development dependency:
