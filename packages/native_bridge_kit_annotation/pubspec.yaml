@@ -1,6 +1,6 @@
 name: native_bridge_kit_annotation
 description: Annotations for the native_bridge_kit code generation system.
-version: 0.1.1
+version: 0.1.2
 repository: https://github.com/handertool/native_bridge_kit
 issue_tracker: https://github.com/handertool/native_bridge_kit/issues
 

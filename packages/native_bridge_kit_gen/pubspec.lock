@@ -111,28 +111,28 @@ packages:
       path: "../native_bridge_kit_android_gen"
       relative: true
     source: path
-    version: "0.1.0"
+    version: "0.1.2"
   native_bridge_kit_annotation:
     dependency: "direct overridden"
     description:
       path: "../native_bridge_kit_annotation"
       relative: true
     source: path
-    version: "0.1.0"
+    version: "0.1.2"
   native_bridge_kit_dart_gen:
     dependency: "direct main"
     description:
       path: "../native_bridge_kit_dart_gen"
       relative: true
     source: path
-    version: "0.1.0"
+    version: "0.1.2"
   native_bridge_kit_ios_gen:
     dependency: "direct main"
     description:
       path: "../native_bridge_kit_ios_gen"
       relative: true
     source: path
-    version: "0.1.0"
+    version: "0.1.2"
   package_config:
     dependency: transitive
     description:

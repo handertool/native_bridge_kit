@@ -7,7 +7,7 @@
 ```yaml
 dev_dependencies:
   build_runner: ^2.4.0
-  native_bridge_kit_dart_gen: ^0.1.0
+  native_bridge_kit_dart_gen: ^0.1.2
 ```
 
 Your application also needs `native_bridge_kit` as a runtime dependency.
