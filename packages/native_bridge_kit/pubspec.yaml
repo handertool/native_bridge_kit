@@ -2,7 +2,7 @@ name: native_bridge_kit
 description: Runtime transport layer for the native_bridge_kit system.
 version: 0.1.0
 repository: https://github.com/handertool/native_bridge_kit
-issue_tracker: mailto:handertool@gmail.com
+issue_tracker: https://github.com/handertool/native_bridge_kit/issues
 
 environment:
   sdk: ^3.11.5
