@@ -2,7 +2,7 @@
 
 One development dependency that provides the Native Bridge Kit generators.
 
-This package is kept private for the initial release and will be published later.
+This package provides the public generator facade for Native Bridge Kit.
 
 ## Overview
 
@@ -17,11 +17,11 @@ It contains no generator source of its own. When `build_runner` resolves this pa
 
 ```yaml
 dependencies:
-  native_bridge_kit: ^0.1.0          # runtime + annotations
+  native_bridge_kit: ^0.1.2          # runtime + annotations
 
 dev_dependencies:
   build_runner: ^2.4.0
-  native_bridge_kit_gen: ^0.1.0      # all generators in one line
+  native_bridge_kit_gen: ^0.1.2      # all generators in one line
 ```
 
 ### Use individual generators
@@ -32,14 +32,14 @@ If you only target one platform:
 # Android only
 dev_dependencies:
   build_runner: ^2.4.0
-  native_bridge_kit_dart_gen: ^0.1.0
-  native_bridge_kit_android_gen: ^0.1.0
+  native_bridge_kit_dart_gen: ^0.1.2
+  native_bridge_kit_android_gen: ^0.1.2
 
 # iOS only
 dev_dependencies:
   build_runner: ^2.4.0
-  native_bridge_kit_dart_gen: ^0.1.0
-  native_bridge_kit_ios_gen: ^0.1.0
+  native_bridge_kit_dart_gen: ^0.1.2
+  native_bridge_kit_ios_gen: ^0.1.2
 ```
 
 ## Usage

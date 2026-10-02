@@ -6,7 +6,7 @@ Annotations for defining Dart-first Flutter native bridge contracts.
 
 ```yaml
 dependencies:
-  native_bridge_kit_annotation: ^0.1.0
+  native_bridge_kit_annotation: ^0.1.2
 ```
 
 Most applications should depend on [`native_bridge_kit`](https://pub.dev/packages/native_bridge_kit), which re-exports these annotations.

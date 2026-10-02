@@ -15,11 +15,57 @@ jobs:
       working-directory: packages/native_bridge_kit_annotation
 
   publish_runtime:
+    needs: publish_annotation
     permissions:
       contents: read
       id-token: write
     uses: dart-lang/setup-dart/.github/workflows/publish.yml@v1
     with:
       working-directory: packages/native_bridge_kit
+
+  publish_dart_gen:
+    needs: publish_annotation
+    permissions:
+      contents: read
+      id-token: write
+    uses: dart-lang/setup-dart/.github/workflows/publish.yml@v1
+    with:
+      working-directory: packages/native_bridge_kit_dart_gen
+
+  publish_android_gen:
+    needs: publish_annotation
+    permissions:
+      contents: read
+      id-token: write
+    uses: dart-lang/setup-dart/.github/workflows/publish.yml@v1
+    with:
+      working-directory: packages/native_bridge_kit_android_gen
+
+  publish_ios_gen:
+    needs: publish_annotation
+    permissions:
+      contents: read
+      id-token: write
+    uses: dart-lang/setup-dart/.github/workflows/publish.yml@v1
+    with:
+      working-directory: packages/native_bridge_kit_ios_gen
+
+  publish_gen:
+    needs: [publish_dart_gen, publish_android_gen, publish_ios_gen]
+    permissions:
+      contents: read
+      id-token: write
+    uses: dart-lang/setup-dart/.github/workflows/publish.yml@v1
+    with:
+      working-directory: packages/native_bridge_kit_gen
+
+  publish_cli:
+    needs: publish_annotation
+    permissions:
+      contents: read
+      id-token: write
+    uses: dart-lang/setup-dart/.github/workflows/publish.yml@v1
+    with:
+      working-directory: packages/native_bridge_kit_cli
 
 

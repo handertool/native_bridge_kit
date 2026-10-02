@@ -6,7 +6,7 @@ Dart-first runtime support for Flutter native bridge contracts.
 
 ```yaml
 dependencies:
-  native_bridge_kit: ^0.1.0
+  native_bridge_kit: ^0.1.2
 ```
 
 ## Define a contract

@@ -65,14 +65,14 @@ You remain responsible for native implementation, host registration, lifecycle b
 
 ## Installation
 
-The first release contains the runtime and its annotations:
+The published packages include the runtime, annotations, generators, and CLI:
 
 ```yaml
 dependencies:
   native_bridge_kit: ^0.1.0
 ```
 
-The generator and CLI packages remain in the repository for a later release. They are not required when using the runtime transport directly. When those packages are published, add the generator facade as a development dependency:
+When using code generation, add the generator facade as a development dependency:
 
 ```bash
 flutter pub get
@@ -273,7 +273,7 @@ The initial pub.dev release contains:
 - `native_bridge_kit` — runtime transports, exceptions, mocks, and re-exported annotations.
 - `native_bridge_kit_annotation` — the annotation dependency used by the runtime.
 
-The following packages are kept private until a later release:
+The following packages are published alongside the runtime packages:
 
 - `native_bridge_kit_dart_gen` — Dart `.g.dart` generator.
 - `native_bridge_kit_android_gen` — Kotlin `.g.kt` generator.

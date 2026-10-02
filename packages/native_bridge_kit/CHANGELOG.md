@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.2
+
+- Coordinated release with the published generator packages.
+
 ## 0.1.1
 
 - Added a package example demonstrating the mock transport.

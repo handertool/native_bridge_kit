@@ -175,7 +175,7 @@ packages:
       path: "../native_bridge_kit_annotation"
       relative: true
     source: path
-    version: "0.1.0"
+    version: "0.1.2"
   node_preamble:
     dependency: transitive
     description:

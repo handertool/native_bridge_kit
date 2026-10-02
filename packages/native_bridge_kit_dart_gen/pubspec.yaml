@@ -1,9 +1,8 @@
 name: native_bridge_kit_dart_gen
 description: Dart code generator for native_bridge_kit. Generates Dart implementation files (.g.dart) from @NativeBridge-annotated contracts.
-version: 0.1.0
+version: 0.1.2
 repository: https://github.com/handertool/native_bridge_kit
-issue_tracker: mailto:handertool@gmail.com
-publish_to: 'none'
+issue_tracker: https://github.com/handertool/native_bridge_kit/issues
 
 environment:
   sdk: ^3.11.5
@@ -11,7 +10,7 @@ environment:
 dependencies:
   analyzer: ">=6.0.0 <8.0.0"
   build: ^2.4.0
-  native_bridge_kit_annotation: ^0.1.0
+  native_bridge_kit_annotation: ^0.1.2
   source_gen: ^1.5.0
 
 dev_dependencies:
