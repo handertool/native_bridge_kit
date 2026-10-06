@@ -1,3 +1,7 @@
+/// iOS/Swift builder for native bridge contracts.
+///
+/// Register [swiftBridgeBuilder] with `build_runner` to generate Swift
+/// handler scaffolds for iOS.
 import 'package:build/build.dart';
 import 'package:source_gen/source_gen.dart';
 import 'src/swift_bridge_generator.dart';

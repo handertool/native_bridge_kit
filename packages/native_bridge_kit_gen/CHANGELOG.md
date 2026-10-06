@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.4
+
+- Added a package example showing the facade setup.
+
 ## 0.1.3
 
 - Clarified that generated native scaffolds target Android and iOS.

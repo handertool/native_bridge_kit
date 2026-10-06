@@ -12,7 +12,7 @@ Kotlin and Swift scaffolds only.
 
 ```yaml
 dependencies:
-  native_bridge_kit: ^0.1.3
+  native_bridge_kit: ^0.1.4
 ```
 
 ## Define a contract

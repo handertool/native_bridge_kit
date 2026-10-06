@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.4
+
+- Added a package example showing CLI installation and drift checking.
+
 ## 0.1.3
 
 - Clarified that drift checks target Android and iOS handlers.

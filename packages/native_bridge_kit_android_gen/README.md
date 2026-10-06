@@ -15,8 +15,8 @@ Add to your project's `pubspec.yaml` **dev_dependencies**:
 ```yaml
 dev_dependencies:
   build_runner: ^2.4.0
-  native_bridge_kit_gen: ^0.1.3
-  native_bridge_kit_android_gen: ^0.1.3
+  native_bridge_kit_gen: ^0.1.4
+  native_bridge_kit_android_gen: ^0.1.4
 ```
 
 ## Quick Start

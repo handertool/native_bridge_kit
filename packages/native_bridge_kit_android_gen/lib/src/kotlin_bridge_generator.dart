@@ -3,6 +3,8 @@ import 'package:build/build.dart';
 import 'package:source_gen/source_gen.dart';
 import 'package:native_bridge_kit_annotation/native_bridge_kit_annotation.dart';
 
+import 'kotlin_type_mapper.dart';
+
 /// Generates Kotlin handler stubs for Android from Dart bridge contracts
 class KotlinBridgeGenerator extends GeneratorForAnnotation<NativeBridge> {
   @override
@@ -62,38 +64,9 @@ class KotlinBridgeGenerator extends GeneratorForAnnotation<NativeBridge> {
         'name': param.name,
         'type': paramType,
         'isRequired': param.isRequired,
-        'kotlinType': _dartTypeToKotlin(paramType),
+        'kotlinType': dartTypeToKotlin(paramType),
       };
     }).toList();
-  }
-
-  /// Convert Dart type to Kotlin type
-  String _dartTypeToKotlin(String dartType) {
-    // Remove nullability markers
-    dartType = dartType.replaceAll('?', '');
-
-    const typeMap = {
-      'String': 'String',
-      'int': 'Int',
-      'double': 'Double',
-      'bool': 'Boolean',
-      'List': 'List<Any>',
-      'Map': 'Map<String, Any>',
-      'Null': 'Void',
-    };
-
-    // Check for Future/Stream wrappers
-    if (dartType.startsWith('Future<')) {
-      final innerType = dartType.substring(7, dartType.length - 1).trim();
-      final kotlinInnerType = _dartTypeToKotlin(innerType);
-      return kotlinInnerType;
-    }
-
-    if (dartType.startsWith('Stream<')) {
-      return 'Any'; // Will be handled specially for EventChannel
-    }
-
-    return typeMap[dartType] ?? 'Any';
   }
 
   /// Convert camelCase to snake_case

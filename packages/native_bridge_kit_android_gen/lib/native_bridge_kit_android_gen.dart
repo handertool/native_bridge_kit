@@ -1,3 +1,7 @@
+/// Android/Kotlin builder for native bridge contracts.
+///
+/// Register [kotlinBridgeBuilder] with `build_runner` to generate Kotlin
+/// handler scaffolds for Android.
 import 'package:build/build.dart';
 import 'package:source_gen/source_gen.dart';
 import 'src/kotlin_bridge_generator.dart';

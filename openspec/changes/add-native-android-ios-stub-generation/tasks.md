@@ -18,8 +18,8 @@
 - [x] 2.6 Implement Stream<T> handler generation with EventChannel and onListen/onCancel
 - [x] 2.7 Implement USER CODE block preservation across regenerations (BEGIN/END markers)
 - [x] 2.8 Add support for custom type mappings via annotation fields
-- [ ] 2.9 Write unit tests for Kotlin type mapping edge cases (nullable, List, Map)
-- [ ] 2.10 Write integration test: generate handler for sample contract, verify Kotlin syntax validity
+- [x] 2.9 Write unit tests for Kotlin type mapping edge cases (nullable, List, Map)
+- [x] 2.10 Write integration test: generate handler for sample contract, verify Kotlin syntax validity
 - [x] 2.11 Create example `device_info_handler.kt` showing generated output and USER CODE patterns
 - [x] 2.12 Test build_runner integration: run `build_runner build` and verify .g.dart and .kt files generated
 
@@ -33,8 +33,8 @@
 - [x] 3.6 Implement Stream<T> handler generation with FlutterEventChannel and StreamHandler
 - [x] 3.7 Implement USER CODE block preservation across regenerations (MARK comments)
 - [x] 3.8 Add support for custom type mappings via annotation fields
-- [ ] 3.9 Write unit tests for Swift type mapping edge cases (optional, Array, Dictionary)
-- [ ] 3.10 Write integration test: generate handler for sample contract, verify Swift syntax validity
+- [x] 3.9 Write unit tests for Swift type mapping edge cases (optional, Array, Dictionary)
+- [x] 3.10 Write integration test: generate handler for sample contract, verify Swift syntax validity
 - [x] 3.11 Create example `DeviceInfoHandler.swift` showing generated output and USER CODE patterns
 - [x] 3.12 Test build_runner integration: run `build_runner build` and verify .g.dart and .swift files generated
 
@@ -76,8 +76,8 @@
 ### Generator and Infrastructure Tests
 
 - [x] 7.1 Create comprehensive unit test suite for Dart contract parser
-- [ ] 7.2 Create unit test suite for Kotlin code generation
-- [ ] 7.3 Create unit test suite for Swift code generation
+- [x] 7.2 Create unit test suite for Kotlin code generation
+- [x] 7.3 Create unit test suite for Swift code generation
 - [ ] 7.4 Create integration test for Android handler compilation and runtime behavior (if possible in test environment)
 - [ ] 7.5 Create integration test for iOS handler compilation and runtime behavior (if possible in test environment)
 - [x] 7.6 Test full circle: define contract → generate code → verify generated code matches spec requirements

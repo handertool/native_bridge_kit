@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.4
+
+- Coordinated release with the package score and documentation improvements.
+
 ## 0.1.3
 
 - Clarified that native transport support targets Android and iOS.

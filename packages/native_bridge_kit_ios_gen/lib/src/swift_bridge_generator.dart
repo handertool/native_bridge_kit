@@ -3,6 +3,8 @@ import 'package:build/build.dart';
 import 'package:source_gen/source_gen.dart';
 import 'package:native_bridge_kit_annotation/native_bridge_kit_annotation.dart';
 
+import 'swift_type_mapper.dart';
+
 /// Generates Swift handler stubs for iOS from Dart bridge contracts
 class SwiftBridgeGenerator extends GeneratorForAnnotation<NativeBridge> {
   @override
@@ -62,38 +64,9 @@ class SwiftBridgeGenerator extends GeneratorForAnnotation<NativeBridge> {
         'name': param.name,
         'type': paramType,
         'isRequired': param.isRequired,
-        'swiftType': _dartTypeToSwift(paramType),
+        'swiftType': dartTypeToSwift(paramType),
       };
     }).toList();
-  }
-
-  /// Convert Dart type to Swift type
-  String _dartTypeToSwift(String dartType) {
-    // Remove nullability markers
-    dartType = dartType.replaceAll('?', '');
-
-    const typeMap = {
-      'String': 'String',
-      'int': 'Int',
-      'double': 'Double',
-      'bool': 'Bool',
-      'List': '[Any]',
-      'Map': '[String: Any]',
-      'Null': 'Void',
-    };
-
-    // Check for Future/Stream wrappers
-    if (dartType.startsWith('Future<')) {
-      final innerType = dartType.substring(7, dartType.length - 1).trim();
-      final swiftInnerType = _dartTypeToSwift(innerType);
-      return swiftInnerType;
-    }
-
-    if (dartType.startsWith('Stream<')) {
-      return 'Any'; // Will be handled specially for EventChannel
-    }
-
-    return typeMap[dartType] ?? 'Any';
   }
 
   /// Get channel name from annotation or use class name

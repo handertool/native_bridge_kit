@@ -15,7 +15,7 @@ Add to your project's `pubspec.yaml` **dev_dependencies**:
 
 ```yaml
 dev_dependencies:
-  native_bridge_kit_cli: ^0.1.3
+  native_bridge_kit_cli: ^0.1.4
 ```
 
 ## drift-check Command

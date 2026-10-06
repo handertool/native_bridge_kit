@@ -1,3 +1,7 @@
+/// Dart builder for Android and iOS native bridge contracts.
+///
+/// Register [nativeBridgeBuilder] with `build_runner` to generate Dart bridge
+/// implementations from annotated contracts.
 import 'package:build/build.dart';
 import 'package:source_gen/source_gen.dart';
 

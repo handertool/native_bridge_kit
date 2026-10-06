@@ -76,7 +76,7 @@ The published packages include the runtime, annotations, generators, and CLI:
 
 ```yaml
 dependencies:
-  native_bridge_kit: ^0.1.3
+  native_bridge_kit: ^0.1.4
 ```
 
 When using code generation, add the generator facade as a development dependency:
