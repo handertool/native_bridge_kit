@@ -54,3 +54,6 @@ app.*.map.json
 # Local Copilot prompt and skill instructions.
 .github/prompts/
 .github/skills/
+
+# Private OpenSpec proposals, specifications, and task files.
+/openspec/

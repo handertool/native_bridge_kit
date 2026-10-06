@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Removed the Web, Linux, macOS, and Windows Flutter runner configurations because Native Bridge Kit supports Android and iOS only.
+
 ## 0.1.0
 
 - Added the `native_bridge_kit` transport and annotation packages.
