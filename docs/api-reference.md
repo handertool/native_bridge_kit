@@ -5,7 +5,7 @@ Complete API documentation for all native_bridge_kit components and APIs.
 ## Table of Contents
 
 1. [Annotations](#annotations)
-2. [Type Mapping](#type-mapping)
+2. [Supported Contract Types](#supported-contract-types)
 3. [MockBridgeTransport](#mockbridgetransport)
 4. [drift-check CLI](#drift-check-cli)
 5. [Error Codes](#error-codes)
@@ -25,66 +25,28 @@ abstract class MyBridge {
 }
 ```
 
-**Parameters:**
-
-- `typeMapping` (optional): `Map<String, String>`
-  - Maps Dart type names to platform-specific type names
-  - Example: `{'DateTime': 'Long', 'Uri': 'String'}`
-
-**Example with Type Mapping:**
-
-```dart
-@NativeBridge(
-  typeMapping: {
-    'DateTime': 'Long',      // Kotlin: Long
-    'Uri': 'String',         // Kotlin: String
-  }
-)
-abstract class FileBridge {
-  Future<void> saveFile(Uri path, DateTime modified);
-}
-```
+The optional `channelPrefix` parameter sets the base method-channel name.
+Without it, the generator derives the prefix from the bridge class name in
+`snake_case`.
 
 ---
 
 ### @NativeMethod()
 
-Marks a method as a native bridge method. Supports `Future<T>` and synchronous `T` return types.
-
-```dart
-@NativeMethod()
-Future<String> getData();
-
-@NativeMethod()
-String getDataSync();  // Use sparingly
-```
-
-**Supported Return Types:**
-
-- `Future<T>` — Async method (recommended)
-- `T` — Sync method (use only if you know the operation is fast)
-- `void` — Fire-and-forget
-
-**Examples:**
+Optionally marks a `Future<T>` method and overrides its wire name. Generated
+one-shot methods must return `Future<T>` and may use named parameters only.
+Synchronous and `void` methods are not supported.
 
 ```dart
 @NativeBridge()
 abstract class DeviceBridge {
-  // Async method
-  @NativeMethod()
+  @NativeMethod(name: 'device_model')
   Future<String> getModel();
 
-  // Method with parameters
-  @NativeMethod()
-  Future<void> vibrate(int durationMs);
+  Future<void> vibrate({required int durationMs});
 
-  // Method returning complex type
   @NativeMethod()
   Future<Map<String, dynamic>> getDeviceInfo();
-
-  // Synchronous method
-  @NativeMethod()
-  bool isEmulator();
 }
 ```
 
@@ -92,17 +54,14 @@ abstract class DeviceBridge {
 
 ### @NativeStream()
 
-Marks a getter as a stream provider for event streaming.
+Marks a parameterless `Stream<T>` method as an event stream and optionally
+overrides its event-channel suffix. Stream parameters are not supported because
+the transport cannot currently pass arguments when subscribing.
 
 ```dart
-@NativeStream()
-Stream<int> get updates;
+@NativeStream(name: 'sensor-events')
+Stream<int> updates();
 ```
-
-**Supported Stream Types:**
-
-- `Stream<T>` — Event stream
-- Works with any serializable type
 
 **Examples:**
 
@@ -111,23 +70,26 @@ Stream<int> get updates;
 abstract class SensorBridge {
   // Simple stream
   @NativeStream()
-  Stream<int> get accelerometerEvents;
+  Stream<int> accelerometerEvents();
 
   // Stream of complex objects
   @NativeStream()
-  Stream<Map<String, dynamic>> get locationUpdates;
+  Stream<Map<String, dynamic>> locationUpdates();
 
   // Stream of multiple events
   @NativeStream()
-  Stream<List<int>> get multiSensorData;
+  Stream<List<int>> multiSensorData();
 }
 ```
 
 ---
 
-## Type Mapping
+## Supported Contract Types
 
-### Supported Built-in Types
+The generators support standard message-codec values and collections composed
+of those values. Custom Dart objects need application-defined serialization
+before they cross the platform channel; the annotations do not define custom
+native type mappings.
 
 | Dart | Kotlin | Swift | Example |
 |------|--------|-------|---------|
@@ -139,44 +101,6 @@ abstract class SensorBridge {
 | `Map<K, V>` | `Map<K, V>` | `[K: V]` | `{"key": "value"}` |
 | `Future<T>` | Async `T` | Async `T` | — |
 | `Stream<T>` | `EventSink<T>` | `FlutterEventSink` | — |
-
-### Custom Type Mapping
-
-Define custom mappings for non-standard types:
-
-```dart
-@NativeBridge(
-  typeMapping: {
-    'DateTime': 'Long',         // Unix timestamp in ms
-    'Uri': 'String',            // URI as string
-    'File': 'String',           // File path as string
-    'MyCustomType': 'String',   // Custom serialization
-  }
-)
-abstract class MyBridge {
-  Future<void> saveFile(File file, DateTime modified);
-}
-```
-
-**Kotlin Implementation Example:**
-
-```kotlin
-fun saveFile(filePath: String, modifiedMs: Long) {
-  val file = java.io.File(filePath)
-  val modified = java.util.Date(modifiedMs)
-  // Your implementation
-}
-```
-
-**Swift Implementation Example:**
-
-```swift
-func saveFile(_ filePath: String, modifiedMs: Int64) {
-  let file = URL(fileURLWithPath: filePath)
-  let modified = Date(timeIntervalSince1970: TimeInterval(modifiedMs) / 1000)
-  // Your implementation
-}
-```
 
 ---
 
@@ -397,7 +321,7 @@ dart run native_bridge_kit_cli:drift_check [options]
 ### Options
 
 ```
---platform <platform>      Platform: android, ios, or both (default: both)
+--platform <platform>      Platform: android, ios, or all (default: all)
 --contract <path>          Path to Dart contract file
 --handler <path>           Path to Kotlin/Swift handler file
 --json                     Output as JSON (default: human-readable)
@@ -443,22 +367,30 @@ dart run native_bridge_kit_cli:drift_check \
 ```json
 {
   "in_sync": false,
+  "issue_count": 2,
   "issues": [
     {
-      "type": "missing_method",
+      "type": "missing_operation",
       "platform": "android",
-      "method": "newMethod",
-      "message": "Method in contract but not in handler"
+      "method": "new_method",
+      "message": "Method \"new_method\" is missing in android handler",
+      "details": null
     },
     {
-      "type": "extra_method",
+      "type": "operation_kind_mismatch",
       "platform": "ios",
-      "method": "oldMethod",
-      "message": "Method in handler but not in contract"
+      "method": "battery_level",
+      "message": "Operation \"battery_level\" is a stream in the Dart contract but a method in the ios handler",
+      "details": null
     }
   ]
 }
 ```
+
+Drift-check compares exact wire names and whether each operation is a method or
+stream. It does not validate parameter names, parameter types, or return types.
+Explicit `@NativeMethod(name: ...)` and `@NativeStream(name: ...)` overrides
+are included in the comparison.
 
 ---
 

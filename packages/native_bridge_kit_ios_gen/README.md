@@ -38,7 +38,7 @@ abstract class DeviceBridge {
   Future<int> getBatteryLevel();
 
   @NativeStream()
-  Stream<int> get batteryUpdates;
+  Stream<int> batteryUpdates();
 }
 ```
 
@@ -134,36 +134,14 @@ private func setupBatteryUpdatesStream(_ arguments: Any?, eventSink: @escaping F
 }
 ```
 
-## Type Mapping
+## Wire Names and Stream Limits
 
-The generator automatically maps Dart types to Swift types:
-
-| Dart | Swift |
-|------|-------|
-| `String` | `String` |
-| `int` | `Int` |
-| `double` | `Double` |
-| `bool` | `Bool` |
-| `List<T>` | `[T]` (Array) |
-| `Map<K, V>` | `[K: V]` (Dictionary) |
-| `Future<T>` | Async method returning `T` |
-| `Stream<T>` | FlutterEventChannel emitting `T` |
-
-### Custom Type Mapping
-
-Define custom mappings in your contract:
-
-```dart
-@NativeBridge(
-  typeMapping: {
-    'DateTime': 'TimeInterval',
-    'Uri': 'String',
-  }
-)
-abstract class FileBridge {
-  Future<void> saveFile(Uri path, DateTime modified);
-}
-```
+By default, the generator converts Dart method names to `snake_case` wire
+names. Use `@NativeMethod(name: '...')` or `@NativeStream(name: '...')` to
+override a method's wire name or event-channel suffix. Stream methods must be
+parameterless; the current transport does not pass subscription arguments.
+Custom Dart objects require application-defined serialization and are not
+mapped through annotation-based type mappings.
 
 ## Best Practices
 
@@ -197,7 +175,7 @@ For integration testing on real iOS, see [Testing Guide](../docs/testing-guide.m
 
 **Type mismatch errors?**
 - Check that your Swift handler types match the Dart contract
-- Use custom type mapping for non-standard types
+- Serialize custom Dart values to supported primitives, lists, or maps
 
 **USER CODE blocks disappeared?**
 - Make sure to use exact `MARK: - BEGIN USER CODE` / `MARK: - END USER CODE` markers

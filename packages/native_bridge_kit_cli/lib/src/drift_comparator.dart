@@ -1,42 +1,66 @@
-/// Compares Dart contracts with native handler implementations
+/// A method call or event stream exposed by a bridge.
+class BridgeOperation {
+  const BridgeOperation({
+    required this.name,
+    required this.kind,
+  });
+
+  /// Exact wire-level operation name.
+  final String name;
+
+  /// Either `method` or `stream`.
+  final String kind;
+}
+
+/// Compares Dart contracts with native handler implementations.
 class DriftComparator {
-  /// Compare Dart contract methods with native handler methods
+  /// Compare resolved contract operations with native handler operations.
   List<DriftIssue> compare({
-    required List<String> contractMethods,
-    required List<String> handlerMethods,
+    required List<BridgeOperation> contractOperations,
+    required List<BridgeOperation> handlerOperations,
     required String platform,
   }) {
     final issues = <DriftIssue>[];
 
-    // Normalize method names for comparison (convert to snake_case)
-    final normalizedContractMethods =
-        contractMethods.map(_toSnakeCase).toList();
-    final normalizedHandlerMethods = handlerMethods.map(_toSnakeCase).toList();
-
-    // Check for missing methods in handler
-    for (final method in normalizedContractMethods) {
-      if (!normalizedHandlerMethods.contains(method)) {
+    for (final contractOperation in contractOperations) {
+      final handlerOperation = _findByName(
+        handlerOperations,
+        contractOperation.name,
+      );
+      if (handlerOperation == null) {
         issues.add(
           DriftIssue(
-            type: 'missing_method',
-            method: method,
+            type: 'missing_operation',
+            method: contractOperation.name,
             platform: platform,
-            message: 'Method "$method" is missing in $platform handler',
+            message: '${_displayKind(contractOperation.kind)} '
+                '"${contractOperation.name}" is missing in $platform handler',
+          ),
+        );
+      } else if (handlerOperation.kind != contractOperation.kind) {
+        issues.add(
+          DriftIssue(
+            type: 'operation_kind_mismatch',
+            method: contractOperation.name,
+            platform: platform,
+            message: 'Operation "${contractOperation.name}" is a '
+                '${contractOperation.kind} in the Dart contract but a '
+                '${handlerOperation.kind} in the $platform handler',
           ),
         );
       }
     }
 
-    // Check for extra methods in handler (not in contract)
-    for (final method in normalizedHandlerMethods) {
-      if (!normalizedContractMethods.contains(method)) {
+    for (final handlerOperation in handlerOperations) {
+      if (_findByName(contractOperations, handlerOperation.name) == null) {
         issues.add(
           DriftIssue(
-            type: 'extra_method',
-            method: method,
+            type: 'extra_operation',
+            method: handlerOperation.name,
             platform: platform,
-            message:
-                'Method "$method" exists in $platform handler but not in contract',
+            message: '${_displayKind(handlerOperation.kind)} '
+                '"${handlerOperation.name}" exists in $platform handler '
+                'but not in the contract',
           ),
         );
       }
@@ -45,25 +69,21 @@ class DriftComparator {
     return issues;
   }
 
-  /// Convert camelCase to snake_case
-  String _toSnakeCase(String input) {
-    final output = StringBuffer();
-    for (int i = 0; i < input.length; i++) {
-      final char = input[i];
-      if (i > 0 && char == char.toUpperCase() && char != char.toLowerCase()) {
-        output.write('_');
-      }
-      output.write(char.toLowerCase());
+  BridgeOperation? _findByName(List<BridgeOperation> operations, String name) {
+    for (final operation in operations) {
+      if (operation.name == name) return operation;
     }
-    return output.toString();
+    return null;
   }
+
+  String _displayKind(String kind) => kind == 'stream' ? 'Stream' : 'Method';
 }
 
-/// Represents a drift issue between contract and handler
+/// Represents a drift issue between a Dart contract and a native handler.
 class DriftIssue {
-  final String type; // 'missing_method', 'extra_method', 'type_mismatch', etc.
+  final String type;
   final String method;
-  final String platform; // 'android' or 'ios'
+  final String platform;
   final String message;
   final String? details;
 

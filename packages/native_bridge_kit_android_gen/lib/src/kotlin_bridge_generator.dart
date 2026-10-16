@@ -7,6 +7,9 @@ import 'kotlin_type_mapper.dart';
 
 /// Generates Kotlin handler stubs for Android from Dart bridge contracts
 class KotlinBridgeGenerator extends GeneratorForAnnotation<NativeBridge> {
+  static const _nativeMethodChecker = TypeChecker.fromRuntime(NativeMethod);
+  static const _nativeStreamChecker = TypeChecker.fromRuntime(NativeStream);
+
   @override
   String generateForAnnotatedElement(
     Element element,
@@ -36,24 +39,71 @@ class KotlinBridgeGenerator extends GeneratorForAnnotation<NativeBridge> {
 
     for (final method in classElement.methods) {
       // Skip private methods and constructors
-      if (method.isPrivate) {
+      if (method.isPrivate || method.isStatic) {
         continue;
       }
 
       final methodName = method.name;
+      final returnType = method.returnType;
+      final isStream = returnType.element?.name == 'Stream';
+      final isFuture = returnType.isDartAsyncFuture;
+      if (!isStream && !isFuture) {
+        throw InvalidGenerationSourceError(
+          'Method "$methodName" has unsupported return type "$returnType". '
+          'Use Future<T> for one-shot calls or Stream<T> for event streams.',
+          element: method,
+        );
+      }
+      if (isStream && method.parameters.isNotEmpty) {
+        throw InvalidGenerationSourceError(
+          'Stream method "$methodName" declares parameters. '
+          'Stream arguments are not supported by native_bridge_kit.',
+          element: method,
+        );
+      }
+
+      final positional = method.parameters.where((p) => !p.isNamed).toList();
+      if (positional.isNotEmpty) {
+        throw InvalidGenerationSourceError(
+          'Method "$methodName" has positional parameters '
+          '(${positional.map((p) => p.name).join(', ')}). '
+          'Only named parameters are supported by native_bridge_kit.',
+          element: method,
+        );
+      }
+
       final parameters = _extractParameters(method);
-      final returnType = method.returnType.toString();
+      final wireName = _resolveWireName(method);
 
       methods.add({
         'name': methodName,
         'dartName': methodName,
-        'kotlinName': _toSnakeCase(methodName),
+        'identifier': _toSnakeCase(methodName),
+        'wireName': wireName,
         'parameters': parameters,
-        'returnType': returnType,
+        'isStream': isStream,
+        'returnType': returnType.toString(),
       });
     }
-
     return methods;
+  }
+
+  String _resolveWireName(MethodElement method) {
+    final methodAnnotation =
+        _nativeMethodChecker.firstAnnotationOfExact(method);
+    if (methodAnnotation != null) {
+      final name = ConstantReader(methodAnnotation).read('name');
+      if (!name.isNull) return name.stringValue;
+    }
+
+    final streamAnnotation =
+        _nativeStreamChecker.firstAnnotationOfExact(method);
+    if (streamAnnotation != null) {
+      final name = ConstantReader(streamAnnotation).read('name');
+      if (!name.isNull) return name.stringValue;
+    }
+
+    return _toSnakeCase(method.name);
   }
 
   /// Extract parameter information from method
@@ -122,11 +172,12 @@ class KotlinBridgeGenerator extends GeneratorForAnnotation<NativeBridge> {
     buffer.writeln('        when (call.method) {');
 
     for (final method in methods.where(
-      (method) => !(method['returnType'] as String).startsWith('Stream'),
+      (method) => !(method['isStream'] as bool),
     )) {
-      final kotlinMethodName = method['kotlinName'] as String;
+      final identifier = method['identifier'] as String;
+      final wireName = method['wireName'] as String;
       buffer.writeln(
-          '          "$kotlinMethodName" -> handle${_capitalize(kotlinMethodName)}(call, result)');
+          '          "$wireName" -> handle${_capitalize(identifier)}(call, result)');
     }
 
     buffer.writeln('          else -> result.notImplemented()');
@@ -140,31 +191,31 @@ class KotlinBridgeGenerator extends GeneratorForAnnotation<NativeBridge> {
     buffer.writeln('');
 
     for (final method in methods.where(
-      (method) => (method['returnType'] as String).startsWith('Stream'),
+      (method) => method['isStream'] as bool,
     )) {
-      final kotlinMethodName = method['kotlinName'] as String;
-      buffer.writeln(
-          '  private val ${kotlinMethodName}EventChannel = EventChannel(');
+      final identifier = method['identifier'] as String;
+      final wireName = method['wireName'] as String;
+      buffer.writeln('  private val ${identifier}EventChannel = EventChannel(');
       buffer.writeln('    flutterEngine.dartExecutor.binaryMessenger,');
-      buffer.writeln('    "$channelName/$kotlinMethodName"');
+      buffer.writeln('    "$channelName/$wireName"');
       buffer.writeln('  )');
       buffer.writeln('');
       buffer.writeln(
-        '  private val ${kotlinMethodName}StreamHandler = ${_capitalize(kotlinMethodName)}StreamHandler()',
+        '  private val ${identifier}StreamHandler = ${_capitalize(identifier)}StreamHandler()',
       );
       buffer.writeln('');
     }
 
     if (methods.any(
-      (method) => (method['returnType'] as String).startsWith('Stream'),
+      (method) => method['isStream'] as bool,
     )) {
       buffer.writeln('  private fun registerEventChannels() {');
       for (final method in methods.where(
-        (method) => (method['returnType'] as String).startsWith('Stream'),
+        (method) => method['isStream'] as bool,
       )) {
-        final kotlinMethodName = method['kotlinName'] as String;
+        final identifier = method['identifier'] as String;
         buffer.writeln(
-          '    ${kotlinMethodName}EventChannel.setStreamHandler(${kotlinMethodName}StreamHandler)',
+          '    ${identifier}EventChannel.setStreamHandler(${identifier}StreamHandler)',
         );
       }
       buffer.writeln('  }');
@@ -177,21 +228,17 @@ class KotlinBridgeGenerator extends GeneratorForAnnotation<NativeBridge> {
 
     // Generate method stubs
     for (final method in methods) {
-      final kotlinMethodName = method['kotlinName'] as String;
+      final identifier = method['identifier'] as String;
       final returnType = method['returnType'] as String;
       final parameters = method['parameters'] as List<Map<String, dynamic>>;
-      final isFuture = returnType.startsWith('Future');
-      final isStream = returnType.startsWith('Stream');
+      final isStream = method['isStream'] as bool;
 
       if (isStream) {
-        buffer
-            .writeln(_generateStreamHandlerStub(kotlinMethodName, parameters));
-      } else if (isFuture) {
-        buffer.writeln(_generateFutureHandlerStub(
-            kotlinMethodName, returnType, parameters));
+        buffer.writeln(_generateStreamHandlerStub(identifier, parameters));
       } else {
-        buffer
-            .writeln(_generateSimpleHandlerStub(kotlinMethodName, parameters));
+        buffer.writeln(
+          _generateFutureHandlerStub(identifier, returnType, parameters),
+        );
       }
       buffer.writeln('');
     }
@@ -205,35 +252,6 @@ class KotlinBridgeGenerator extends GeneratorForAnnotation<NativeBridge> {
   String _capitalize(String input) {
     if (input.isEmpty) return input;
     return input[0].toUpperCase() + input.substring(1);
-  }
-
-  /// Generate handler stub for simple sync methods
-  String _generateSimpleHandlerStub(
-    String kotlinMethodName,
-    List<Map<String, dynamic>> parameters,
-  ) {
-    final buffer = StringBuffer();
-    buffer.writeln('  private fun handle${_capitalize(kotlinMethodName)}(');
-    buffer.writeln('    call: MethodCall,');
-    buffer.writeln('    result: MethodChannel.Result');
-    buffer.writeln('  ) {');
-    buffer.writeln('    // BEGIN USER CODE - modify this method as needed');
-    buffer.writeln('    // TODO: Implement handler for $kotlinMethodName');
-
-    if (parameters.isNotEmpty) {
-      buffer.writeln('    // Extract parameters:');
-      for (final param in parameters) {
-        final paramName = param['name'] as String;
-        final paramType = param['type'] as String;
-        buffer.writeln('    // - $paramName: $paramType');
-      }
-    }
-
-    buffer.writeln('    result.success(null)');
-    buffer.writeln('    // END USER CODE');
-    buffer.writeln('  }');
-
-    return buffer.toString();
   }
 
   /// Generate handler stub for Future<T> async methods

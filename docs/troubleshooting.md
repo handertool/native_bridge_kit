@@ -90,7 +90,7 @@ flutter pub run build_runner build
 
 ```bash
 # 1. Check your Dart contract types are valid
-# 2. Verify type mapping matches handler signatures
+# 2. Verify supported Dart types match handler signatures
 # 3. Update Kotlin version in android/build.gradle.kts
 
 android {
@@ -342,7 +342,7 @@ test('deterministic stream', () async {
 // Contract
 @NativeBridge()
 abstract class MyBridge {
-  Future<void> save(String filePath);  // ← Expects String
+  Future<void> save({required String filePath});  // ← Expects String
 }
 
 // Handler
@@ -374,33 +374,13 @@ func getData() -> [String: Int] {
 }
 ```
 
-### "Custom type not mapped"
+### "Custom Dart type cannot be sent over the channel"
 
-**Error:** Can't convert between Dart and platform type
+**Cause:** StandardMessageCodec does not automatically serialize arbitrary Dart
+objects.
 
-**Cause:** No type mapping provided
-
-**Solution:**
-
-```dart
-// Add type mapping to contract
-@NativeBridge(
-  typeMapping: {
-    'DateTime': 'Long',
-    'Uri': 'String',
-    'File': 'String',
-  }
-)
-abstract class MyBridge {
-  Future<void> save(File file, DateTime date);
-}
-
-// Handler receives mapped types
-fun save(filePath: String, dateMs: Long) {
-  val file = java.io.File(filePath)
-  val date = java.util.Date(dateMs)
-}
-```
+**Solution:** Serialize the object to supported primitives, lists, or maps in
+Dart, and implement the corresponding conversion in the native handler.
 
 ---
 
@@ -426,12 +406,11 @@ void main() {
 }
 ```
 
-### Q: When should I use custom type mapping?
+### Q: How do I pass a custom Dart object?
 
-**A:** When your Dart types don't directly map to platform types:
-- `DateTime` → Unix timestamp (long)
-- `Uri` → String path
-- Custom classes → JSON strings
+**A:** Convert it to a StandardMessageCodec-supported primitive, list, or map
+before calling the bridge, then convert it back in native code as needed.
+Annotation-based custom type mappings are not supported.
 
 ### Q: Can I have both manual MethodChannel and native_bridge_kit?
 
@@ -472,7 +451,7 @@ Future<String?>? getOptionalValue();  // Can return null
 ```dart
 @NativeBridge()
 abstract class PlatformBridge {
-  Future<void> openFile(String path);
+  Future<void> openFile({required String path});
 }
 
 // Android: Use Intent

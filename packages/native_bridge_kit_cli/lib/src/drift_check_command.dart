@@ -40,8 +40,14 @@ class DriftCheckCommand {
       final contractParser = DartContractParser(contractPath);
       final contractData = await contractParser.parseContract();
       final contractMetadata = ContractMetadata.fromMap(contractData);
-      final contractMethodNames =
-          contractMetadata.methods.map((m) => m.name).toList();
+      final contractOperations = contractMetadata.methods
+          .map(
+            (method) => BridgeOperation(
+              name: method.wireName,
+              kind: method.kind,
+            ),
+          )
+          .toList();
 
       // Parse handlers and compare
       final comparator = DriftComparator();
@@ -54,8 +60,8 @@ class DriftCheckCommand {
           final handlerData = kotlinParser.parseHandler();
           final handlerMetadata = HandlerMetadata.fromMap(handlerData);
           final androidIssues = comparator.compare(
-            contractMethods: contractMethodNames,
-            handlerMethods: handlerMetadata.methods,
+            contractOperations: contractOperations,
+            handlerOperations: handlerMetadata.operations,
             platform: 'android',
           );
           allIssues.addAll(androidIssues);
@@ -69,8 +75,8 @@ class DriftCheckCommand {
           final handlerData = swiftParser.parseHandler();
           final handlerMetadata = HandlerMetadata.fromMap(handlerData);
           final iosIssues = comparator.compare(
-            contractMethods: contractMethodNames,
-            handlerMethods: handlerMetadata.methods,
+            contractOperations: contractOperations,
+            handlerOperations: handlerMetadata.operations,
             platform: 'ios',
           );
           allIssues.addAll(iosIssues);

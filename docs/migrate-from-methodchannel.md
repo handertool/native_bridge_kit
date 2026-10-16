@@ -275,22 +275,20 @@ flutter run
 @NativeMethod()
 Future<String> getModel();
 
-// Kotlin handler must be named 'getModel'
-// NOT 'model()' or 'get_model()'
-fun getModel(): String { ... }
+// Default wire name is 'get_model' in Kotlin and Swift dispatch.
+// An explicit @NativeMethod(name: '...') overrides that wire name.
 ```
 
-### 2. Type Mapping Matters
+### 2. Serialize Custom Values Explicitly
 
 ```dart
-// If parameters don't align, use type mapping
-@NativeBridge(typeMapping: {'DateTime': 'Long'})
+// Encode custom values into StandardMessageCodec-supported values yourself.
+@NativeBridge()
 abstract class MyBridge {
-  Future<void> save(DateTime date);
+  Future<void> save({required int timestamp});
 }
 
-// Kotlin handler receives Long (milliseconds)
-fun save(dateMs: Long) { ... }
+// Convert the timestamp back to a date in the platform handler.
 ```
 
 ### 3. Error Codes Must Match

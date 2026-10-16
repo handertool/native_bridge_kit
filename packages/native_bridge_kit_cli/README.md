@@ -101,22 +101,30 @@ Issues:
 ```json
 {
   "in_sync": false,
+  "issue_count": 2,
   "issues": [
     {
-      "type": "missing_method",
+      "type": "missing_operation",
       "platform": "android",
-      "method": "getBatteryLevel",
-      "message": "Method defined in contract but not found in handler"
+      "method": "get_battery_level",
+      "message": "Method \"get_battery_level\" is missing in android handler",
+      "details": null
     },
     {
-      "type": "extra_method",
+      "type": "operation_kind_mismatch",
       "platform": "ios",
-      "method": "getTemperature",
-      "message": "Method found in handler but not defined in contract"
+      "method": "battery_level",
+      "message": "Operation \"battery_level\" is a stream in the Dart contract but a method in the ios handler",
+      "details": null
     }
   ]
 }
 ```
+
+Drift-check compares exact wire names and distinguishes method calls from
+event streams. It honors explicit `@NativeMethod(name: ...)` and
+`@NativeStream(name: ...)` overrides. It does not validate parameter names,
+parameter types, or return types.
 
 ## CI/CD Integration
 
@@ -145,7 +153,7 @@ jobs:
 
 1. **Parse Dart Contract**: Extracts method signatures from `@NativeBridge` class
 2. **Parse Handlers**: Reads Kotlin and/or Swift handler files
-3. **Compare Methods**: Checks if all contract methods have corresponding handler methods
+3. **Compare Operations**: Checks exact wire names and method-versus-stream kinds
 4. **Report Results**: Displays in-sync status and any drift issues
 
 ## Common Issues
@@ -159,9 +167,10 @@ jobs:
 - Specify paths explicitly with `--handler` flag
 
 **False positives on method names**
-- The checker normalizes names to snake_case
-- Ensure your Kotlin/Swift methods follow naming conventions
-- Use exact method names from your contract
+- The checker compares wire names exactly; it does not convert native names
+  into `snake_case`.
+- Ensure native dispatch names and event-channel suffixes match the contract's
+  resolved names.
 
 ## Advanced Usage
 

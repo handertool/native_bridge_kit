@@ -36,7 +36,11 @@ Generate the `.g.dart` implementation:
 dart run build_runner build
 ```
 
-The generator supports `Future<T>` methods, `Stream<T>` methods, named parameters, and explicit wire names through `@NativeMethod` and `@NativeStream`.
+The generator supports `Future<T>` methods with named parameters and
+parameterless `Stream<T>` methods. Use `@NativeMethod(name: '...')` and
+`@NativeStream(name: '...')` to override wire names. Positional parameters,
+stream parameters, and other return types fail generation with an actionable
+error.
 
 Only named parameters are supported. Native business logic and platform handler registration are outside this package's scope.
 

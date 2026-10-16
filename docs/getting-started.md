@@ -25,7 +25,7 @@ abstract class DeviceBridge {
 
   /// Stream of battery level updates
   @NativeStream()
-  Stream<int> get batteryUpdates;
+  Stream<int> batteryUpdates();
 }
 ```
 
@@ -381,10 +381,10 @@ Congratulations! You've successfully:
 Future<String> getData();
 
 // Streaming events
-Stream<int> get updates;
+Stream<int> updates();
 
 // With parameters
-Future<void> doAction(String name, int value);
+Future<void> doAction({required String name, required int value});
 
 // Multiple return values
 Future<Map<String, dynamic>> getDetails();

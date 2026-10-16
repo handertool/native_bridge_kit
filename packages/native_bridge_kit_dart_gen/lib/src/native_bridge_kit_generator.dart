@@ -107,6 +107,13 @@ class NativeBridgeGenerator extends GeneratorForAnnotation<NativeBridge> {
     final wireName = _resolveWireName(method);
 
     if (_isStream(returnType)) {
+      if (method.parameters.isNotEmpty) {
+        throw InvalidGenerationSourceError(
+          'Stream method "${method.name}" declares parameters. '
+          'Stream arguments are not supported by native_bridge_kit.',
+          element: method,
+        );
+      }
       _writeStreamMethod(buffer, method, channelPrefix, wireName);
       return;
     }
@@ -116,11 +123,11 @@ class NativeBridgeGenerator extends GeneratorForAnnotation<NativeBridge> {
       return;
     }
 
-    // Unsupported return type — emit a warning and skip, don't break the build.
-    log.warning(
-      '[@NativeBridge] Skipping "${method.name}": return type '
-      '"$returnType" is not supported. '
-      'Use Future<T> for one-shot calls or Stream<T> for event streams.',
+    throw InvalidGenerationSourceError(
+      'Method "${method.name}" has unsupported return type "$returnType". '
+      'Use Future<T> for one-shot calls or a parameterless Stream<T> '
+      'for event streams.',
+      element: method,
     );
   }
 
@@ -231,8 +238,7 @@ class NativeBridgeGenerator extends GeneratorForAnnotation<NativeBridge> {
     return 'dynamic';
   }
 
-  bool _isFuture(DartType type) =>
-      type.isDartAsyncFuture || type.isDartAsyncFutureOr;
+  bool _isFuture(DartType type) => type.isDartAsyncFuture;
 
   bool _isStream(DartType type) => type.element?.name == 'Stream';
 

@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'drift_comparator.dart';
+
 /// Parses Kotlin source files and extracts bridge handler metadata
 class KotlinHandlerParser {
   final String handlerPath;
@@ -26,30 +28,22 @@ class KotlinHandlerParser {
   List<Map<String, dynamic>> _extractMethods(String content) {
     final methods = <Map<String, dynamic>>[];
 
-    // Simple regex-based extraction for method signatures
-    // Pattern: private fun handleGet<MethodName>(call: MethodCall, result: MethodChannel.Result)
-    final methodPattern = RegExp(
-      r'private fun handleGet(\w+)\s*\(',
-      multiLine: true,
-    );
-
-    for (final match in methodPattern.allMatches(content)) {
-      final methodNameCamel = match.group(1) ?? '';
-      // Convert from handleGetXxx to xxx (snake_case will be added back)
-      methods.add({
-        'name': _camelToSnakeCase(methodNameCamel),
-        'type': 'method',
-      });
-    }
-
-    final dispatchPattern = RegExp(r'"([a-z][a-zA-Z0-9_]*)"\s*->');
+    final dispatchPattern = RegExp(r'"([^"]+)"\s*->');
     for (final match in dispatchPattern.allMatches(content)) {
       _addMethod(methods, match.group(1)!, 'method');
     }
 
-    final streamPattern = RegExp(r'"\$CHANNEL/([a-z][a-zA-Z0-9_]*)"');
-    for (final match in streamPattern.allMatches(content)) {
-      _addMethod(methods, match.group(1)!, 'stream');
+    final eventChannelPattern = RegExp(
+      r'EventChannel\s*\(([\s\S]*?)\)',
+      multiLine: true,
+    );
+    for (final match in eventChannelPattern.allMatches(content)) {
+      final arguments = match.group(1)!;
+      final channelName = RegExp(r'"([^"]+)"').firstMatch(arguments)?.group(1);
+      final slash = channelName?.lastIndexOf('/') ?? -1;
+      if (channelName != null && slash >= 0) {
+        _addMethod(methods, channelName.substring(slash + 1), 'stream');
+      }
     }
 
     return methods;
@@ -63,19 +57,6 @@ class KotlinHandlerParser {
     if (!methods.any((method) => method['name'] == name)) {
       methods.add({'name': name, 'type': type});
     }
-  }
-
-  /// Convert camelCase to snake_case
-  String _camelToSnakeCase(String input) {
-    final output = StringBuffer();
-    for (int i = 0; i < input.length; i++) {
-      final char = input[i];
-      if (i > 0 && char == char.toUpperCase() && char != char.toLowerCase()) {
-        output.write('_');
-      }
-      output.write(char.toLowerCase());
-    }
-    return output.toString();
   }
 }
 
@@ -105,32 +86,22 @@ class SwiftHandlerParser {
   List<Map<String, dynamic>> _extractMethods(String content) {
     final methods = <Map<String, dynamic>>[];
 
-    // Simple regex-based extraction for method signatures
-    // Pattern: private func handle<MethodName>(
-    final methodPattern = RegExp(
-      r'private func handle(\w+)\s*\(',
-      multiLine: true,
-    );
-
-    for (final match in methodPattern.allMatches(content)) {
-      final methodNameCamel = match.group(1) ?? '';
-      // Keep camelCase for Swift methods
-      methods.add({
-        'name': _camelCaseToSnakeCase(methodNameCamel),
-        'type': 'method',
-      });
-    }
-
-    final dispatchPattern = RegExp(r'case\s+"([a-z][a-zA-Z0-9_]*)"\s*:');
+    final dispatchPattern = RegExp(r'case\s+"([^"]+)"\s*:');
     for (final match in dispatchPattern.allMatches(content)) {
       _addMethod(methods, match.group(1)!, 'method');
     }
 
-    final streamPattern = RegExp(
-      r'name:\s*"[a-z][a-zA-Z0-9_]*/([a-z][a-zA-Z0-9_]*)"',
+    final eventChannelPattern = RegExp(
+      r'FlutterEventChannel\s*\(([\s\S]*?)\)',
+      multiLine: true,
     );
-    for (final match in streamPattern.allMatches(content)) {
-      _addMethod(methods, match.group(1)!, 'stream');
+    for (final match in eventChannelPattern.allMatches(content)) {
+      final arguments = match.group(1)!;
+      final channelName = RegExp(r'"([^"]+)"').firstMatch(arguments)?.group(1);
+      final slash = channelName?.lastIndexOf('/') ?? -1;
+      if (channelName != null && slash >= 0) {
+        _addMethod(methods, channelName.substring(slash + 1), 'stream');
+      }
     }
 
     return methods;
@@ -145,38 +116,29 @@ class SwiftHandlerParser {
       methods.add({'name': name, 'type': type});
     }
   }
-
-  /// Convert camelCase to snake_case for comparison
-  String _camelCaseToSnakeCase(String input) {
-    final output = StringBuffer();
-    for (int i = 0; i < input.length; i++) {
-      final char = input[i];
-      if (i > 0 && char == char.toUpperCase() && char != char.toLowerCase()) {
-        output.write('_');
-      }
-      output.write(char.toLowerCase());
-    }
-    return output.toString();
-  }
 }
 
 /// Handler metadata
 class HandlerMetadata {
   final String file;
-  final List<String> methods;
+  final List<BridgeOperation> operations;
 
   HandlerMetadata({
     required this.file,
-    required this.methods,
+    required this.operations,
   });
 
   factory HandlerMetadata.fromMap(Map<String, dynamic> data) {
-    final methods = ((data['methods'] as List)
-        .map((m) => (m as Map)['name'] as String)
-        .toList());
+    final operations = (data['methods'] as List).map((method) {
+      final values = method as Map;
+      return BridgeOperation(
+        name: values['name'] as String,
+        kind: values['type'] as String,
+      );
+    }).toList();
     return HandlerMetadata(
       file: data['file'] as String,
-      methods: methods,
+      operations: operations,
     );
   }
 }

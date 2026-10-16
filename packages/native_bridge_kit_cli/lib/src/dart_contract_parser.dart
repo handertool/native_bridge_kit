@@ -66,9 +66,13 @@ class DartContractParser {
         final methodName = member.name.lexeme;
         final returnType = member.returnType?.toString() ?? 'void';
         final parameters = _extractParameters(member);
+        final returnTypeName =
+            member.declaredElement?.returnType.element?.name ?? '';
 
         methods.add({
           'name': methodName,
+          'wireName': _resolveWireName(member),
+          'kind': returnTypeName == 'Stream' ? 'stream' : 'method',
           'returnType': returnType,
           'parameters': parameters,
         });
@@ -88,6 +92,36 @@ class DartContractParser {
         'isRequired': param.isRequired,
       };
     }).toList();
+  }
+
+  String _resolveWireName(MethodDeclaration method) {
+    for (final annotation in method.metadata) {
+      final annotationName = annotation.name.name;
+      if (annotationName != 'NativeMethod' &&
+          annotationName != 'NativeStream') {
+        continue;
+      }
+
+      final wireName = annotation.elementAnnotation
+          ?.computeConstantValue()
+          ?.getField('name')
+          ?.toStringValue();
+      if (wireName != null) return wireName;
+    }
+
+    return _toSnakeCase(method.name.lexeme);
+  }
+
+  String _toSnakeCase(String input) {
+    final output = StringBuffer();
+    for (var i = 0; i < input.length; i++) {
+      final char = input[i];
+      if (i > 0 && char == char.toUpperCase() && char != char.toLowerCase()) {
+        output.write('_');
+      }
+      output.write(char.toLowerCase());
+    }
+    return output.toString();
   }
 }
 
@@ -116,11 +150,15 @@ class ContractMetadata {
 /// Method metadata
 class MethodMetadata {
   final String name;
+  final String wireName;
+  final String kind;
   final String returnType;
   final List<ParameterMetadata> parameters;
 
   MethodMetadata({
     required this.name,
+    required this.wireName,
+    required this.kind,
     required this.returnType,
     required this.parameters,
   });
@@ -132,6 +170,8 @@ class MethodMetadata {
         .toList();
     return MethodMetadata(
       name: data['name'] as String,
+      wireName: data['wireName'] as String,
+      kind: data['kind'] as String,
       returnType: data['returnType'] as String,
       parameters: parameters,
     );

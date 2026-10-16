@@ -32,7 +32,9 @@ Available annotations:
 
 - `@NativeBridge` marks a contract and optionally sets its channel prefix.
 - `@NativeMethod` overrides a method's wire name.
-- `@NativeStream` marks a stream contract and optionally overrides its event-channel suffix.
+- `@NativeStream` marks a parameterless `Stream<T>` method and optionally
+  overrides its event-channel suffix. Stream subscription arguments are not
+  supported by the current transport.
 
 This package contains annotations only. The code-generation packages are kept in the repository and will be published in a later release.
 
