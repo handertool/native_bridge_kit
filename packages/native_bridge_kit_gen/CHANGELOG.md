@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.5
+
+- Coordinated release of the Dart, Android, and iOS generators.
+
 ## 0.1.4
 
 - Added a package example showing the facade setup.

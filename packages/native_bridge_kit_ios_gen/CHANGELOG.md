@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.5
+
+- Honor explicit method and stream wire-name overrides in generated Swift.
+- Reject unsupported signatures and parameterized streams.
+
 ## 0.1.4
 
 - Added a package example and documented the public builder library.

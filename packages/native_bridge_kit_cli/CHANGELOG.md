@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.5
+
+- Compare resolved wire names and method-versus-stream kinds in drift-check.
+- Honor explicit Dart method and stream wire-name overrides.
+- Clarify that drift-check does not validate operation signatures.
+
 ## 0.1.4
 
 - Added a package example showing CLI installation and drift checking.

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.5
+
+- Coordinated release with generator and drift-check improvements; annotation API unchanged.
+
 ## 0.1.4
 
 - Coordinated release with the package score and documentation improvements.

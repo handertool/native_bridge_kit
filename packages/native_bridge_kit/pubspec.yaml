@@ -1,6 +1,6 @@
 name: native_bridge_kit
 description: Runtime transport layer for Android and iOS native bridge contracts.
-version: 0.1.4
+version: 0.1.5
 repository: https://github.com/handertool/native_bridge_kit
 issue_tracker: https://github.com/handertool/native_bridge_kit/issues
 
@@ -10,7 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  native_bridge_kit_annotation: ^0.1.4
+  native_bridge_kit_annotation: ^0.1.5
 
 dev_dependencies:
   flutter_test:
